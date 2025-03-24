@@ -1,0 +1,133 @@
+<div class="space-y-6" [formGroup]="filterForm">
+  <div class="flex justify-between items-center">
+    <h3 class="text-lg font-bold">Filters</h3>
+    <button
+      type="button"
+      class="text-sm text-blue-600 hover:text-blue-800 cursor-pointer"
+      (click)="clearFilters()"
+    >
+      Clear all
+    </button>
+  </div>
+
+  <!-- Categories -->
+  <div class="space-y-3">
+    <h4 class="font-medium">Categories</h4>
+    <div class="space-y-2" formArrayName="categories">
+      @if (categories().length === 0) {
+       <div class="bg-gray-200 h-4 rounded animate-pulse"></div>
+       <div class="bg-gray-200 h-4 rounded animate-pulse"></div>
+       <div class="bg-gray-200 h-4 rounded animate-pulse"></div>
+       <div class="bg-gray-200 h-4 rounded animate-pulse"></div>
+       <div class="bg-gray-200 h-4 rounded animate-pulse"></div>
+      } @else { @for (category of categories(); track category; let i = $index)
+      {
+      <label class="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          class="rounded text-blue-600"
+          [formControlName]="i"
+        />
+        <span>{{ category.displayName }}</span>
+      </label>
+      } }
+    </div>
+  </div>
+
+  <!-- Price Range -->
+  <div class="space-y-3" formGroupName="priceRange">
+    <h4 class="font-medium">Price Range</h4>
+    <div class="flex items-center space-x-2">
+      <input
+        type="number"
+        placeholder="Min"
+        class="w-full p-2 border rounded"
+        formControlName="min"
+      />
+      <span>to</span>
+      <input
+        type="number"
+        placeholder="Max"
+        class="w-full p-2 border rounded"
+        formControlName="max"
+      />
+    </div>
+    <input
+      type="range"
+      min="0"
+      max="1000"
+      class="w-full"
+      [formControlName]="'min'"
+    />
+  </div>
+
+  <!-- Ratings -->
+  <div class="space-y-3" formGroupName="ratings">
+    <h4 class="font-medium">Customer Ratings</h4>
+    <div class="space-y-2">
+      <label class="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          class="rounded text-blue-600"
+          formControlName="fourStars"
+        />
+        <div class="flex items-center">
+          @for (star of getStars(4); track $index) {
+          <span class="text-yellow-400">★</span>
+          } @for (star of getStars(5 - 4); track $index) {
+          <span class="text-gray-300">★</span>
+          }
+          <span class="ml-1 text-sm text-gray-500">& Up</span>
+        </div>
+      </label>
+
+      <label class="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          class="rounded text-blue-600"
+          formControlName="threeStars"
+        />
+        <div class="flex items-center">
+          @for (star of getStars(3); track $index) {
+          <span class="text-yellow-400">★</span>
+          } @for (star of getStars(5 - 3); track $index) {
+          <span class="text-gray-300">★</span>
+          }
+          <span class="ml-1 text-sm text-gray-500">& Up</span>
+        </div>
+      </label>
+
+      <label class="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          class="rounded text-blue-600"
+          formControlName="twoStars"
+        />
+        <div class="flex items-center">
+          @for (star of getStars(2); track $index) {
+          <span class="text-yellow-400">★</span>
+          } @for (star of getStars(5 - 2); track $index) {
+          <span class="text-gray-300">★</span>
+          }
+          <span class="ml-1 text-sm text-gray-500">& Up</span>
+        </div>
+      </label>
+
+      <label class="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          class="rounded text-blue-600"
+          formControlName="oneStar"
+        />
+        <div class="flex items-center">
+          @for (star of getStars(1); track $index) {
+          <span class="text-yellow-400">★</span>
+          } @for (star of getStars(5 - 1); track $index) {
+          <span class="text-gray-300">★</span>
+          }
+          <span class="ml-1 text-sm text-gray-500">& Up</span>
+        </div>
+      </label>
+    </div>
+  </div>
+</div>
