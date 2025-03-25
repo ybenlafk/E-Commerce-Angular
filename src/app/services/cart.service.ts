@@ -12,7 +12,12 @@ export class CartService {
     this.loadCart();
   }
 
-  // Add product to cart
+  /**
+   * Adds a product to the cart.
+   * If the product already exists, its quantity is increased.
+   * @param product The product to add.
+   * @param quantity The quantity to add (default is 1).
+   */
   addToCart(product: Product, quantity: number = 1): void {
     const existingItem = this.cart.find(
       (item) => item.product.id === product.id
@@ -25,28 +30,46 @@ export class CartService {
     this.saveCart();
   }
 
-  // Update product quantity
+  /**
+   * Updates the quantity of a product in the cart.
+   * @param productId The ID of the product to update.
+   * @param quantity The new quantity to set.
+   */
   updateQuantity(productId: number, quantity: number): void {
-    const item = this.cart.find((item) => Number(item.product.id) === productId);
+    const item = this.cart.find(
+      (item) => Number(item.product.id) === productId
+    );
     if (item) {
       item.quantity = quantity;
       this.saveCart();
     }
   }
 
-  // Remove product from cart
+  /**
+   * Removes a product from the cart.
+   * @param productId The ID of the product to remove.
+   */
   removeFromCart(productId: number): void {
-    this.cart = this.cart.filter((item) => Number(item.product.id) !== productId);
+    this.cart = this.cart.filter(
+      (item) => Number(item.product.id) !== productId
+    );
     this.saveCart();
   }
 
-  // Calculate subtotal for a product
+  /**
+   * Calculates the subtotal for a specific product in the cart.
+   * @param productId The ID of the product.
+   * @returns The subtotal price (product price * quantity).
+   */
   getSubtotal(productId: number): number {
     const item = this.cart.find((item) => item.product.id === productId);
     return item ? item.product.price * item.quantity : 0;
   }
 
-  // Calculate total for the entire cart
+  /**
+   * Calculates the total price of all products in the cart.
+   * @returns The total cart price.
+   */
   getTotal(): number {
     return this.cart.reduce(
       (total, item) => total + item.product.price * item.quantity,
@@ -54,18 +77,25 @@ export class CartService {
     );
   }
 
-  // Get all cart items
+  /**
+   * Retrieves all items currently in the cart.
+   * @returns The list of cart items.
+   */
   getCartItems(): CartItem[] {
     return this.cart;
   }
 
-  // Clear the cart
+  /**
+   * Clears all items from the cart.
+   */
   clearCart(): void {
     this.cart = [];
     this.saveCart();
   }
 
-  // Load cart from localStorage
+  /**
+   * Loads cart data from localStorage to persist across sessions.
+   */
   private loadCart(): void {
     const cart = localStorage.getItem('cart');
     if (cart) {
@@ -73,7 +103,9 @@ export class CartService {
     }
   }
 
-  // Save cart to localStorage
+  /**
+   * Saves the current cart state to localStorage.
+   */
   private saveCart(): void {
     localStorage.setItem('cart', JSON.stringify(this.cart));
   }

@@ -81,6 +81,10 @@ export class CheckoutComponent implements OnInit {
     this.updateOrderSummary();
   }
 
+  /**
+   * Initializes all form groups for shipping, billing, and payment information
+   * with their respective validators
+   */
   initForms(): void {
     this.shippingForm = this.fb.group({
       fullName: ['', [Validators.required]],
@@ -131,6 +135,10 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
+  /**
+   * Updates the order summary values (subtotal, shipping, tax, total)
+   * by fetching data from OrderService
+   */
   updateOrderSummary(): void {
     this.subtotal = this.orderService.getSubtotal();
     this.shippingCost = this.orderService.getShippingCost();
@@ -142,6 +150,10 @@ export class CheckoutComponent implements OnInit {
     );
   }
 
+  /**
+   * Advances to the next step in the checkout process
+   * Validates current step's form before proceeding
+   */
   nextStep(): void {
     if (this.currentStep === 1 && this.shippingForm.valid) {
       if (this.sameBillingAddress) {
@@ -153,12 +165,19 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
+  /**
+   * Returns to the previous step in the checkout process
+   */
   prevStep(): void {
     if (this.currentStep > 1) {
       this.currentStep--;
     }
   }
 
+  /**
+   * Toggles between using the same address for billing and shipping
+   * or entering a separate billing address
+   */
   toggleBillingAddress(): void {
     this.sameBillingAddress = !this.sameBillingAddress;
     if (this.sameBillingAddress) {
@@ -171,6 +190,10 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
+  /**
+   * Selects a payment method and updates the payment form
+   * @param method - The payment method type to select
+   */
   selectPaymentMethod(method: PaymentMethod['type']): void {
     this.selectedPaymentMethod = method;
     this.paymentForm.patchValue({ type: method });
@@ -186,6 +209,10 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
+  /**
+   * Submits the order to the OrderService
+   * Handles success and error cases, clears cart on success
+   */
   placeOrder(): void {
     if (this.paymentForm.valid || this.selectedPaymentMethod !== 'creditCard') {
       this.isSubmitting = true;

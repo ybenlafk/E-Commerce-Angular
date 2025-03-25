@@ -16,21 +16,38 @@ export class CartComponent implements OnInit {
   subtotal = signal<number>(0);
   total = signal<number>(0);
 
+  /**
+   * Lifecycle hook that initializes the cart items and total price
+   * when the component is loaded.
+   */
   ngOnInit(): void {
     this.cartItems.set(this.cartService.getCartItems());
     this.total.set(this.cartService.getTotal());
   }
 
+  /**
+   * Increases the quantity of a cart item by 1.
+   * @param item The cart item whose quantity needs to be increased.
+   */
   incrementQuantity(item: CartItem): void {
     this.cartService.updateQuantity(Number(item.product.id), item.quantity + 1);
     this.total.set(this.cartService.getTotal());
   }
 
+  /**
+   * Decreases the quantity of a cart item by 1.
+   * If the quantity reaches zero, the item should ideally be removed.
+   * @param item The cart item whose quantity needs to be decreased.
+   */
   decrementQuantity(item: CartItem): void {
     this.cartService.updateQuantity(Number(item.product.id), item.quantity - 1);
     this.total.set(this.cartService.getTotal());
   }
 
+  /**
+   * Removes an item from the cart.
+   * @param item The cart item to be removed.
+   */
   removeItem(item: CartItem): void {
     this.cartService.removeFromCart(Number(item.product.id));
     this.total.set(this.cartService.getTotal());
