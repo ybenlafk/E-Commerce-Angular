@@ -1,1 +1,232 @@
-<p>cart works!</p>
+<div
+  class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8"
+>
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">
+        Your Cart
+      </h1>
+      <span
+        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+      >
+        {{ cartItems().length }}
+        {{ cartItems().length === 1 ? "item" : "items" }}
+      </span>
+    </div>
+
+    <!-- Empty State -->
+    @if (cartItems().length === 0) {
+    <div class="bg-white rounded-2xl shadow-sm p-12 text-center">
+      <div class="mx-auto h-24 w-24 text-gray-400 mb-6">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+          />
+        </svg>
+      </div>
+      <h3 class="text-xl font-medium text-gray-900 mb-2">Your cart is empty</h3>
+      <p class="text-gray-500 mb-6">
+        Looks like you haven't added any products to your cart yet.
+      </p>
+      <button
+        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+      >
+        Start Shopping
+      </button>
+    </div>
+    }
+
+    <!-- Cart Items -->
+    @if (cartItems().length > 0) {
+    <div class="flex flex-col lg:flex-row gap-8 w-full">
+      <!-- Cart Items List -->
+      <div class="flex-1 bg-white rounded-2xl shadow-sm w-full overflow-hidden">
+        <!-- Cart Header -->
+        <div
+          class="hidden md:grid md:grid-cols-12 gap-4 p-6 border-b border-gray-200 text-sm font-medium text-gray-500 uppercase tracking-wider"
+        >
+          <div class="col-span-6">Product</div>
+          <div class="col-span-2 text-center">Price</div>
+          <div class="col-span-2 text-center">Quantity</div>
+          <div class="col-span-2 text-right">Total</div>
+        </div>
+
+        <!-- Cart Items -->
+        <div class="divide-y divide-gray-200">
+          @for (item of cartItems(); track $index) {
+          <div class="p-6 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+            <!-- Product Info -->
+            <div class="md:col-span-6 flex items-center space-x-4">
+              <div
+                class="flex-shrink-0 h-20 w-20 bg-gray-100 rounded-lg overflow-hidden"
+              >
+                <img
+                  [src]="item.product.imageUrl"
+                  [alt]="item.product.name"
+                  class="h-full w-full object-cover"
+                />
+              </div>
+              <div>
+                <h3 class="text-base font-medium text-gray-900">
+                  {{ item.product.name }}
+                </h3>
+                <p class="mt-1 text-sm text-gray-500 md:hidden">
+                  ${{ item.product.price.toFixed(2) }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Price -->
+            <div class="hidden md:block md:col-span-2 text-center">
+              <span class="text-sm font-medium text-gray-900"
+                >${{ item.product.price.toFixed(2) }}</span
+              >
+            </div>
+
+            <!-- Quantity -->
+            <div class="md:col-span-2 flex justify-start md:justify-center">
+              <div
+                class="inline-flex items-center px-2 py-1 border border-gray-300 rounded-md"
+              >
+                <button
+                  [disabled]="item.quantity <= 1"
+                  (click)="decrementQuantity(item)"
+                  [ngClass]="{
+                    'text-gray-300': item.quantity <= 1,
+                    'text-gray-600 hover:text-gray-700': item.quantity > 1
+                  }"
+                  class="focus:outline-none w-8 h-8 flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M20 12H4"
+                    />
+                  </svg>
+                </button>
+                <input
+                  type="text"
+                  [value]="item.quantity"
+                  min="1"
+                  class="w-10 text-center border-0 focus:outline-none text-gray-900"
+                />
+                <button
+                  (click)="incrementQuantity(item)"
+                  class="text-gray-600 hover:text-gray-700 focus:outline-none w-8 h-8 flex items-center justify-center transition-color cursor-pointer"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Subtotal and Remove -->
+            <div
+              class="md:col-span-2 flex items-center justify-between md:justify-end"
+            >
+              <span class="font-medium text-gray-900">
+                ${{ (item.product.price * item.quantity).toFixed(2) }}
+              </span>
+              <button
+                (click)="removeItem(item)"
+                class="ml-4 text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors cursor-pointer"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="lg:w-96 h-fit bg-white rounded-2xl shadow-sm p-6">
+        <div class="space-y-6">
+          <h2 class="text-lg font-medium text-gray-900">Order Summary</h2>
+          <div class="space-y-4">
+            <div class="flex justify-between text-base text-gray-600">
+              <span>Subtotal</span>
+              <span>${{ total().toFixed(2) }}</span>
+            </div>
+            <div class="flex justify-between text-base text-gray-600">
+              <span>Tax (10%)</span>
+              <span>${{ (total() * 0.1).toFixed(2) }}</span>
+            </div>
+            <div
+              class="border-t border-gray-200 pt-4 flex justify-between text-base font-medium text-gray-900"
+            >
+              <span>Total</span>
+              <span>${{ (total() + total() * 0.1).toFixed(2) }}</span>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <button
+              routerLink="/checkout"
+              class="w-full flex justify-center items-center px-6 py-3 rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors cursor-pointer"
+            >
+              Proceed to Checkout
+            </button>
+
+            <div class="text-center">
+              <a
+                href="#"
+                class="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-500"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                  />
+                </svg>
+                Continue Shopping
+              </a>
+            </div>
+          </div>
+
+          <p class="text-sm text-center text-gray-500">
+            Shipping and taxes calculated at checkout
+          </p>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>

@@ -189,7 +189,7 @@
       <!-- Add to Cart Button -->
       <button
         (click)="addToCart()"
-        class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200"
+        class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 cursor-pointer"
         [disabled]="product.stockCount <= 0"
       >
         Add to Cart
@@ -234,6 +234,35 @@
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  <div class="mt-12">
+    <h2 class="text-2xl font-bold mb-4">Related Products</h2>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+    >
+      @if (isLoading()) { @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
+      <div class="rounded-lg p-4">
+        <div class="bg-gray-200 h-48 rounded-lg mb-4 animate-pulse"></div>
+        <div class="h-4 bg-gray-200 rounded w-3/4 mb-2 animate-pulse"></div>
+        <div class="h-4 bg-gray-200 rounded w-1/2 mb-4 animate-pulse"></div>
+        <div class="h-10 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+      } } @else if (error()) {
+      <div
+        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded"
+      >
+        <p>{{ error() }}</p>
+      </div>
+      } @else { @for (product of products() ; track product.id) {
+      <app-product-card [product]="product" />
+      } @empty {
+      <p class="text-gray-500 col-span-4 text-center py-12">
+        No products found related to this product.
+      </p>
+      } }
     </div>
   </div>
 </div>

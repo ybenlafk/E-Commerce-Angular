@@ -10,8 +10,15 @@ import { RouterLink } from '@angular/router';
 })
 export class ProductCardComponent {
   @Input() product!: any;
+  imageLoaded = false;
 
-  addToCart(): void {
-    console.log(`Added ${this.product.name} to cart`);
+  onImageLoad() {
+    this.imageLoaded = true;
+  }
+
+  getStarWidth(starNumber: number): number {
+    const rating = Math.min(this.product.rating, 5);
+    const clampedRating = rating - (starNumber - 1);
+    return Math.max(0, Math.min(100, clampedRating * 100));
   }
 }

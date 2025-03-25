@@ -42,7 +42,8 @@ export class ProductService {
     categories: Category[] = [],
     minPrice: number = 0,
     maxPrice: number = Infinity,
-    minRating: number = 0
+    minRating: number = 0,
+    sortOption: string = 'priceLowToHigh'
   ) {
     this.isLoading.set(true);
     this.error.set(null);
@@ -71,6 +72,19 @@ export class ProductService {
       params = params.set('rating_gte', minRating.toString());
     }
 
+    switch (sortOption) {
+      case 'priceHighToLow':
+        params = params.set('_sort', '-price')
+        break;
+      case 'popularity':
+        params = params.set('_sort', 'rating').set('_order', 'desc');
+        break;
+      case 'priceLowToHigh':
+      default:
+        params = params.set('_sort', 'price')
+        break;
+    }
+    
     return this.http
       .get<PaginatedResponse<Product>>(`${API_URL}/products`, {
         params,
@@ -91,5 +105,31 @@ export class ProductService {
   // Fetch product details by ID
   fetchProductById(productId: number) {
     return this.http.get<Product>(`${API_URL}/products/${productId}`);
+  }
+
+  fetchTop4RatedProductsInCategory(category: string, excludeId: number) {
+    this.isLoading.set(true);
+    this.error.set(null);
+
+    let params = new HttpParams()
+      .set('_limit', '5')
+      .set('_sort', 'rating')
+      .set('_order', 'desc')
+      .set('category', category);
+
+    return this.http
+      .get<Product[]>(`${API_URL}/products`, { params })
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: (products) => {
+          const filteredProducts = products
+            .filter((product) => Number(product.id) !== excludeId)
+            .slice(0, 4);
+          this.paginatedProducts.set(filteredProducts);
+        },
+        error: (error) => {
+          this.error.set(error.message);
+        },
+      });
   }
 }

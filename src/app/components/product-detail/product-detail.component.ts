@@ -4,17 +4,25 @@ import { Product } from '../../models/product.type';
 import { ProductService } from '../../services/product.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs';
+import { ProductCardComponent } from '../product-card/product-card.component';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ProductCardComponent],
   templateUrl: './product-detail.component.html',
   styleUrls: ['./product-detail.component.css'],
 })
 export class ProductDetailComponent implements OnInit {
-  productService = inject(ProductService);
   @Input() product!: Product;
+  private paramSubscription: any;
+  cartService = inject(CartService);
+  productService = inject(ProductService);
+  products = this.productService.paginatedProducts;
+  isLoading = this.productService.isLoading;
+  error = this.productService.error;
+
   selectedImage: string = '';
   quantity: number = 1;
   router = inject(Router);
@@ -23,13 +31,10 @@ export class ProductDetailComponent implements OnInit {
   thumbnailsLoaded: { [key: string]: boolean } = {};
 
   onThumbnailLoad(image: string): void {
-    // Create new object to trigger change detection
     this.thumbnailsLoaded = { ...this.thumbnailsLoaded, [image]: true };
   }
 
-  // Reset states when product changes (in ngOnInit or wherever you load your product)
   loadProduct(): void {
-    // Your existing product loading logic...
     this.selectedImage = this.product.images[0];
     this.selectedImageLoaded = false;
     this.thumbnailsLoaded = {};
@@ -40,15 +45,15 @@ export class ProductDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Fetch product details if not provided
-    this.route.paramMap
+    this.scrollToTop();
+
+    this.paramSubscription = this.route.paramMap
       .pipe(
         switchMap((params) => {
           const id = params.get('id');
           if (id) {
             return this.productService.fetchProductById(Number(id));
           } else {
-            // redirect to home if no id is found
             this.router.navigate(['/']);
             return [];
           }
@@ -57,7 +62,16 @@ export class ProductDetailComponent implements OnInit {
       .subscribe((product) => {
         this.product = product;
         this.selectedImage = product.images[0];
+        this.scrollToTop(); // Scroll again after new data loads
+        this.productService.fetchTop4RatedProductsInCategory(
+          product.category,
+          Number(product.id)
+        );
       });
+  }
+
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   selectImage(image: string): void {
@@ -77,7 +91,10 @@ export class ProductDetailComponent implements OnInit {
     }
   }
 
-  addToCart(): void {}
+  addToCart(): void {
+    this.cartService.addToCart(this.product, this.quantity);
+    this.router.navigate(['/cart']);
+  }
 
   getDiscountPercentage(): number {
     if (this.product.discountPrice) {
@@ -112,5 +129,11 @@ export class ProductDetailComponent implements OnInit {
 
   getSpecValue(value: string | number | string[]): string[] {
     return Array.isArray(value) ? value : [value.toString()];
+  }
+
+  ngOnDestroy(): void {
+    if (this.paramSubscription) {
+      this.paramSubscription.unsubscribe();
+    }
   }
 }

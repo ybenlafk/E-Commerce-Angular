@@ -34,6 +34,9 @@ export class FilterComponent implements OnInit {
         twoStars: [false],
         oneStar: [false],
       }),
+      sorting: this.fb.group({
+        option: ['priceLowToHigh'],
+      }),
     });
   }
 
@@ -93,6 +96,7 @@ export class FilterComponent implements OnInit {
     const selectedCategories = this.getSelectedCategories();
     const minRating = this.getMinRating();
     const priceRange = this.filterForm.get('priceRange')?.value;
+    const sortingOption = this.filterForm.get('sorting.option')?.value;
 
     // Call the product service with the filters
     this.productService.fetchProductsWithFilters(
@@ -101,7 +105,8 @@ export class FilterComponent implements OnInit {
       selectedCategories,
       priceRange.min,
       priceRange.max,
-      minRating
+      minRating,
+      sortingOption
     );
   }
 

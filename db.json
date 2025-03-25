@@ -1,7 +1,7 @@
 {
   "products": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Smartphone Pro Max",
       "description": "The latest flagship smartphone with advanced camera system and all-day battery life.",
       "longDescription": "Experience the next generation of mobile technology with the Smartphone Pro Max. Featuring a stunning 6.7-inch Super Retina XDR display, an advanced triple-camera system that takes your photography to the professional level, and a powerful A15 chip that delivers lightning-fast performance for gaming and augmented reality experiences. With all-day battery life and 5G capabilities, this smartphone keeps you connected and productive throughout your day.",
@@ -27,7 +27,7 @@
       "featured": true
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Wireless Noise-Cancelling Headphones",
       "description": "Premium wireless headphones with adaptive noise cancellation and high-fidelity audio.",
       "longDescription": "Immerse yourself in your favorite music with these premium wireless headphones. Featuring adaptive noise cancellation technology that adjusts to your environment, these headphones deliver crystal-clear audio without distractions. With up to 30 hours of battery life, comfortable over-ear design, and intuitive touch controls, these headphones are perfect for long listening sessions, travel, or working from home.",
@@ -53,7 +53,7 @@
       "featured": true
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "Ultra HD Smart TV 55\"",
       "description": "55-inch 4K Ultra HD Smart TV with HDR and built-in streaming apps.",
       "longDescription": "Transform your home entertainment experience with this 55-inch Ultra HD Smart TV. Featuring 4K resolution, HDR technology, and a wide color gamut, this TV delivers stunning picture quality with vivid colors and deep blacks. The smart platform gives you access to thousands of streaming apps, and the voice-enabled remote makes finding content easier than ever. With multiple HDMI and USB ports, you can connect all your devices for a complete entertainment setup.",
@@ -79,7 +79,7 @@
       "featured": false
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "Classic Cotton T-Shirt",
       "description": "Comfortable 100% cotton t-shirt with a modern fit, perfect for everyday wear.",
       "longDescription": "Add a versatile staple to your wardrobe with this classic cotton t-shirt. Made from premium 100% combed cotton for exceptional softness and durability, this t-shirt features a modern fit that's flattering without being too tight. The reinforced collar and double-stitched seams ensure it maintains its shape wash after wash. Available in multiple colors, this t-shirt is perfect for layering or wearing on its own year-round.",
@@ -100,12 +100,18 @@
         "fit": "Regular",
         "careInstructions": "Machine wash cold",
         "origin": "Made in USA",
-        "availableSizes": ["S", "M", "L", "XL", "XXL"]
+        "availableSizes": [
+          "S",
+          "M",
+          "L",
+          "XL",
+          "XXL"
+        ]
       },
       "featured": false
     },
     {
-      "id": 5,
+      "id": "5",
       "name": "Stainless Steel Water Bottle",
       "description": "Double-walled insulated water bottle that keeps drinks cold for 24 hours or hot for 12 hours.",
       "longDescription": "Stay hydrated in style with this premium stainless steel water bottle. The double-walled vacuum insulation keeps your drinks cold for up to 24 hours or hot for up to 12 hours, making it perfect for hiking, office use, or everyday hydration. Made from high-quality 18/8 stainless steel that's both durable and BPA-free, this bottle features a leak-proof lid with a convenient carrying handle. Its sleek design fits most cup holders and bag side pockets for easy transport.",
@@ -131,7 +137,7 @@
       "featured": true
     },
     {
-      "id": 6,
+      "id": "6",
       "name": "Wireless Gaming Mouse",
       "description": "High-precision wireless gaming mouse with RGB lighting and customizable buttons.",
       "longDescription": "Elevate your gaming experience with this high-performance wireless gaming mouse. Featuring a high-precision 16,000 DPI optical sensor for pixel-perfect accuracy and ultra-low latency wireless connectivity, this mouse gives you the competitive edge in any game. The customizable RGB lighting with 16.8 million color options lets you personalize your setup, while the 6 programmable buttons can be configured to your play style. With up to 60 hours of battery life and a comfortable ergonomic design, you can game for hours in comfort.",
@@ -157,7 +163,7 @@
       "featured": false
     },
     {
-      "id": 7,
+      "id": "7",
       "name": "Handcrafted Ceramic Mug Set",
       "description": "Set of 4 handcrafted ceramic mugs, each with a unique glaze pattern and comfortable handle.",
       "longDescription": "Add a touch of artisanal charm to your morning routine with this set of 4 handcrafted ceramic mugs. Each mug is individually thrown on a potter's wheel and features a unique glaze pattern, ensuring no two are exactly alike. With a generous 12oz capacity and a comfortable ergonomic handle, these mugs are perfect for coffee, tea, or hot chocolate. The stoneware ceramic construction retains heat well and is both microwave and dishwasher safe for everyday convenience.",
@@ -183,7 +189,7 @@
       "featured": false
     },
     {
-      "id": 8,
+      "id": "8",
       "name": "Slim Leather Wallet",
       "description": "Minimalist leather wallet with RFID blocking technology and space for essential cards and cash.",
       "longDescription": "Streamline your everyday carry with this slim leather wallet. Crafted from full-grain leather that develops a beautiful patina over time, this wallet combines classic style with modern functionality. The thoughtful design includes space for up to 8 cards, a convenient ID window, and a slim pocket for folded cash, all while maintaining a compact profile that fits comfortably in your front pocket. Built-in RFID blocking technology protects your credit cards from unauthorized scanning.",
@@ -209,7 +215,7 @@
       "featured": true
     },
     {
-      "id": 9,
+      "id": "9",
       "name": "Smart Fitness Tracker",
       "description": "Advanced fitness tracker with heart rate monitoring, sleep tracking, and 7-day battery life.",
       "longDescription": "Take control of your health and fitness with this advanced smart fitness tracker. Track your daily activity including steps, distance, calories burned, and active minutes. The 24/7 heart rate monitoring provides insights into your cardio health, workout intensity, and calorie burn. Advanced sleep tracking analyzes your sleep stages to help you understand and improve your sleep quality. With a water-resistant design and up to 7 days of battery life, this tracker keeps up with your active lifestyle. The companion app provides detailed analytics and personalized insights to help you reach your health goals.",
@@ -235,33 +241,7 @@
       "featured": true
     },
     {
-      "id": 10,
-      "name": "Cast Iron Skillet",
-      "description": "Pre-seasoned 10.25-inch cast iron skillet, perfect for searing, baking, broiling, and more.",
-      "longDescription": "Experience the versatility and durability of this classic 10.25-inch cast iron skillet. Pre-seasoned with vegetable oil for a natural, easy-release finish that improves with use, this skillet is ready to use right out of the box. The unparalleled heat retention and even heating of cast iron makes it perfect for searing, sautéing, baking, broiling, and frying. The helper handle provides added support when moving between stovetop and oven. This heirloom-quality piece can last for generations with proper care and becomes naturally non-stick the more you use it.",
-      "price": 29.99,
-      "discountPrice": null,
-      "imageUrl": "https://images.unsplash.com/photo-1574181609941-50c9722f2e49",
-      "images": [
-        "https://images.unsplash.com/photo-1574181609941-50c9722f2e49",
-        "https://images.unsplash.com/photo-1620809876622-3c9a8555359a",
-        "https://images.unsplash.com/photo-1626251376203-230f5f4620a3"
-      ],
-      "category": "home",
-      "rating": 4.8,
-      "reviews": 372,
-      "stockCount": 96,
-      "specs": {
-        "diameter": "10.25 inches",
-        "material": "Cast iron",
-        "weight": "5.2 lbs",
-        "preSeasoned": "Yes",
-        "compatible": "Stovetop, oven, grill, campfire"
-      },
-      "featured": false
-    },
-    {
-      "id": 11,
+      "id": "11",
       "name": "Leather Crossbody Bag",
       "description": "Stylish genuine leather crossbody bag with adjustable strap and multiple compartments.",
       "longDescription": "Combine style and practicality with this genuine leather crossbody bag. Crafted from high-quality leather that gets better with age, this bag features a spacious main compartment with a zip closure for security, plus additional interior and exterior pockets to keep your essentials organized. The adjustable strap allows for comfortable carrying at your preferred length, while the sleek, minimalist design transitions seamlessly from day to night. Perfect for travel, shopping, or everyday use, this versatile bag adds a touch of sophistication to any outfit.",
@@ -287,7 +267,7 @@
       "featured": true
     },
     {
-      "id": 12,
+      "id": "12",
       "name": "Portable Bluetooth Speaker",
       "description": "Waterproof portable Bluetooth speaker with 20 hours of playtime and rich, immersive sound.",
       "longDescription": "Take your music anywhere with this rugged, waterproof Bluetooth speaker. Delivering powerful, immersive sound with deep bass and clear highs, this speaker transforms any location into your personal concert venue. The IPX7 waterproof rating means it can handle splashes, rain, and even brief submersion, making it perfect for pool parties or beach days. With up to 20 hours of playtime on a single charge and built-in power bank functionality to charge your devices, you'll never have to cut the music short. The durable fabric cover and rubber housing protect against drops and bumps for worry-free portability.",
@@ -315,29 +295,142 @@
   ],
   "categories": [
     {
-      "id": 1,
+      "id": "1",
       "name": "electronics",
       "displayName": "Electronics",
       "description": "Latest gadgets and electronic devices"
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "clothing",
       "displayName": "Clothing",
       "description": "Stylish and comfortable apparel"
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "home",
       "displayName": "Home & Kitchen",
       "description": "Essentials for your home"
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "accessories",
       "displayName": "Accessories",
       "description": "Fashionable accessories to complete your look"
     }
   ],
-  "orders": []
+  "orders": [
+    {
+      "id": "9024",
+      "items": [
+        {
+          "productId": "8",
+          "productName": "Slim Leather Wallet",
+          "imageUrl": "https://images.unsplash.com/photo-1627123424574-724758594e93",
+          "unitPrice": 39.99,
+          "quantity": 2,
+          "subtotal": 79.98
+        },
+        {
+          "productId": "3",
+          "productName": "Ultra HD Smart TV 55\"",
+          "imageUrl": "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1",
+          "unitPrice": 699.99,
+          "quantity": 2,
+          "subtotal": 1399.98
+        }
+      ],
+      "shippingAddress": {
+        "fullName": "benlafkih yahya",
+        "streetAddress": "1337 School Khouribga",
+        "apartment": "ريحان/بلوك 1/رقم 21",
+        "city": "KHOURIBGA",
+        "state": "Iowa",
+        "zipCode": "25999",
+        "country": "United States",
+        "phoneNumber": "(067) 497-6802"
+      },
+      "billingAddress": {
+        "fullName": "benlafkih yahya",
+        "streetAddress": "1337 School Khouribga",
+        "apartment": "ريحان/بلوك 1/رقم 21",
+        "city": "KHOURIBGA",
+        "state": "Iowa",
+        "zipCode": "25999",
+        "country": "United States",
+        "phoneNumber": "(067) 497-6802"
+      },
+      "paymentMethod": {
+        "type": "paypal",
+        "cardNumber": "",
+        "nameOnCard": "",
+        "expirationDate": "",
+        "cvv": ""
+      },
+      "subtotal": 1479.96,
+      "shippingCost": 10,
+      "tax": 147.996,
+      "total": 1637.9560000000001,
+      "status": "cancelled",
+      "createdAt": "2025-03-25T12:21:06.355Z",
+      "updatedAt": "2025-03-25T12:39:12.546Z",
+      "notes": "Order placed via web checkout"
+    },
+    {
+      "id": "1d52",
+      "items": [
+        {
+          "productId": "8",
+          "productName": "Slim Leather Wallet",
+          "imageUrl": "https://images.unsplash.com/photo-1627123424574-724758594e93",
+          "unitPrice": 39.99,
+          "quantity": 1,
+          "subtotal": 39.99
+        },
+        {
+          "productId": "6",
+          "productName": "Wireless Gaming Mouse",
+          "imageUrl": "https://images.unsplash.com/photo-1563297007-0686b7003af7",
+          "unitPrice": 69.99,
+          "quantity": 4,
+          "subtotal": 279.96
+        }
+      ],
+      "shippingAddress": {
+        "fullName": "benlafkih yahya",
+        "streetAddress": "1337 School Khouribga",
+        "apartment": "ريحان/بلوك 1/رقم 21",
+        "city": "KHOURIBGA",
+        "state": "Iowa",
+        "zipCode": "25999",
+        "country": "Germany",
+        "phoneNumber": "(067) 497-6802"
+      },
+      "billingAddress": {
+        "fullName": "benlafkih yahya",
+        "streetAddress": "1337 School Khouribga",
+        "apartment": "ريحان/بلوك 1/رقم 21",
+        "city": "KHOURIBGA",
+        "state": "Iowa",
+        "zipCode": "25999",
+        "country": "Germany",
+        "phoneNumber": "(067) 497-6802"
+      },
+      "paymentMethod": {
+        "type": "googlePay",
+        "cardNumber": "",
+        "nameOnCard": "",
+        "expirationDate": "",
+        "cvv": ""
+      },
+      "subtotal": 319.95,
+      "shippingCost": 10,
+      "tax": 31.995,
+      "total": 361.945,
+      "status": "pending",
+      "createdAt": "2025-03-25T13:43:43.939Z",
+      "updatedAt": "2025-03-25T13:43:43.939Z",
+      "notes": "Order placed via web checkout"
+    }
+  ]
 }

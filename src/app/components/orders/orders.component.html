@@ -1,0 +1,549 @@
+<div
+  class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8"
+>
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1
+        class="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl"
+      >
+        My Orders
+      </h1>
+      <p class="mt-2 text-lg text-gray-600">
+        View and manage your order history
+      </p>
+    </div>
+
+    <!-- Orders List View -->
+    @if (!showDetailView) {
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+      <!-- Filters -->
+      <div class="p-6 border-b border-gray-200">
+        <div
+          class="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+        >
+          <div class="flex flex-col sm:flex-row gap-4">
+            <div>
+              <label
+                for="status-filter"
+                class="block text-sm font-medium text-gray-700 mb-1"
+                >Filter by Status</label
+              >
+              <select
+                id="status-filter"
+                [(ngModel)]="statusFilter"
+                (change)="onFilterChange()"
+                class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+              >
+                <option value="all">All Orders</option>
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      @if (isLoading) {
+      <div class="p-12 text-center">
+        <div
+          class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-4"
+        ></div>
+        <p class="text-gray-500">Loading your orders...</p>
+      </div>
+      }
+
+      <!-- Empty State -->
+      @if (!isLoading && filteredOrders.length === 0) {
+      <div class="p-12 text-center">
+        <div class="mx-auto h-24 w-24 text-gray-400 mb-6">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1"
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+            />
+          </svg>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No orders found</h3>
+        <p class="text-gray-500 mb-6">
+          {{
+            searchTerm || statusFilter !== "all"
+              ? "Try adjusting your filters or search terms."
+              : "You haven't placed any orders yet."
+          }}
+        </p>
+        <a
+          routerLink="/"
+          class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Start Shopping
+        </a>
+      </div>
+      }
+
+      <!-- Orders Table -->
+      @if (!isLoading && filteredOrders.length > 0) {
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Order
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Date
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Status
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Total
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Items
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for (order of filteredOrders; track $index) {
+            <tr
+              (click)="viewOrderDetails(order)"
+              class="hover:bg-gray-50 cursor-pointer transition-colors"
+            >
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">
+                  #{{ order.id }}
+                </div>
+                @if (order.trackingNumber) {
+                <div class="text-xs text-gray-500">
+                  Tracking: {{ order.trackingNumber }}
+                </div>
+                }
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">
+                  {{ formatDate(order.createdAt) }}
+                </div>
+                <div class="text-xs text-gray-500">
+                  {{ formatTime(order.createdAt) }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span
+                  [ngClass]="getStatusColor(order.status)"
+                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full py-1"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      [attr.d]="
+                        order.status === 'pending'
+                          ? 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
+                          : order.status === 'processing'
+                          ? 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
+                          : order.status === 'shipped'
+                          ? 'M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0'
+                          : order.status === 'delivered'
+                          ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+                          : 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'
+                      "
+                    />
+                  </svg>
+                  {{
+                    order.status.charAt(0).toUpperCase() + order.status.slice(1)
+                  }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                ${{ order.total.toFixed(2) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">
+                  {{ order.items.length }}
+                  {{ order.items.length === 1 ? "item" : "items" }}
+                </div>
+                <div class="text-xs text-gray-500 truncate max-w-[150px]">
+                  {{ order.items[0].productName
+                  }}{{ order.items.length > 1 ? " + more" : "" }}
+                </div>
+              </td>
+              <td
+                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+              >
+                @if (order.status === 'pending' || order.status ===
+                'processing') {
+                <button
+                  (click)="cancelOrder(order.id!, $event)"
+                  class="text-red-600 hover:text-red-900 ml-4"
+                >
+                  Cancel
+                </button>
+                } @if (order.status === 'shipped') {
+                <button class="text-indigo-600 hover:text-indigo-900 ml-4">
+                  Track
+                </button>
+                }
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Order Detail View -->
+    @if (showDetailView && selectedOrder) {
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+      <!-- Header with Back Button -->
+      <div
+        class="p-6 border-b border-gray-200 flex items-center justify-between"
+      >
+        <div class="flex items-center">
+          <button
+            (click)="closeOrderDetails()"
+            class="mr-4 text-gray-400 hover:text-gray-500 cursor-pointer"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          </button>
+          <h2 class="text-xl font-medium text-gray-900">
+            Order #{{ selectedOrder.id }}
+          </h2>
+        </div>
+        <span
+          [ngClass]="getStatusColor(selectedOrder.status)"
+          class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              [attr.d]="
+                selectedOrder.status === 'pending'
+                  ? 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
+                  : selectedOrder.status === 'processing'
+                  ? 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
+                  : selectedOrder.status === 'shipped'
+                  ? 'M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0'
+                  : selectedOrder.status === 'delivered'
+                  ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+                  : 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'
+              "
+            />
+          </svg>
+          {{
+            selectedOrder.status.charAt(0).toUpperCase() +
+              selectedOrder.status.slice(1)
+          }}
+        </span>
+      </div>
+
+      <!-- Order Details -->
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <!-- Order Date -->
+          <div>
+            <h3
+              class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1"
+            >
+              Order Date
+            </h3>
+            <p class="text-sm text-gray-900">
+              {{ formatDate(selectedOrder.createdAt) }}
+            </p>
+            <p class="text-xs text-gray-500">
+              {{ formatTime(selectedOrder.createdAt) }}
+            </p>
+          </div>
+
+          <!-- Payment Method -->
+          <div>
+            <h3
+              class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1"
+            >
+              Payment Method
+            </h3>
+            <p class="text-sm text-gray-900">
+              {{ getPaymentMethodName(selectedOrder.paymentMethod.type) }}
+            </p>
+            @if (selectedOrder.paymentMethod.cardNumber) {
+            <p class="text-xs text-gray-500">
+              {{ selectedOrder.paymentMethod.cardNumber }}
+            </p>
+            }
+          </div>
+
+          <!-- Shipping Method -->
+          <div>
+            <h3
+              class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1"
+            >
+              Shipping Method
+            </h3>
+            <p class="text-sm text-gray-900">
+              {{
+                selectedOrder.shippingCost === 0
+                  ? "Free Shipping"
+                  : "Standard Shipping"
+              }}
+            </p>
+            @if (selectedOrder.trackingNumber) {
+            <p class="text-xs text-gray-500">
+              Tracking: {{ selectedOrder.trackingNumber }}
+            </p>
+            }
+          </div>
+
+          <!-- Order Status -->
+          <div>
+            <h3
+              class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1"
+            >
+              Last Updated
+            </h3>
+            <p class="text-sm text-gray-900">
+              {{ formatDate(selectedOrder.updatedAt) }}
+            </p>
+            <p class="text-xs text-gray-500">
+              {{ formatTime(selectedOrder.updatedAt) }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="mb-8">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Order Items</h3>
+          <div class="bg-gray-50 rounded-lg overflow-hidden">
+            <div class="divide-y divide-gray-200">
+              @for (item of selectedOrder.items; track $index) {
+              <div class="p-4 sm:p-6 flex flex-col sm:flex-row">
+                <div
+                  class="flex-shrink-0 w-full sm:w-16 h-16 bg-gray-200 rounded-md overflow-hidden mb-4 sm:mb-0"
+                >
+                  <img
+                    src="{{ item.imageUrl }}"
+                    alt="{{ item.productName }}"
+                    class="w-full h-full object-center object-cover"
+                  />
+                </div>
+                <div
+                  class="sm:ml-6 flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <h4 class="text-sm font-medium text-gray-900">
+                      {{ item.productName }}
+                    </h4>
+                    <p class="mt-1 text-sm text-gray-500">
+                      Qty: {{ item.quantity }}
+                    </p>
+                  </div>
+                  <div class="mt-2 sm:mt-0 flex flex-col sm:items-end">
+                    <p class="text-sm font-medium text-gray-900">
+                      ${{ item.subtotal.toFixed(2) }}
+                    </p>
+                    <p class="mt-1 text-xs text-gray-500">
+                      ${{ item.unitPrice.toFixed(2) }} each
+                    </p>
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Addresses -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Addresses</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <!-- Shipping Address -->
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <h4 class="text-sm font-medium text-gray-900 mb-2">
+                  Shipping Address
+                </h4>
+                <address class="text-sm text-gray-500 not-italic">
+                  {{ selectedOrder.shippingAddress.fullName }}<br />
+                  {{ selectedOrder.shippingAddress.streetAddress }}<br />
+                  @if (selectedOrder.shippingAddress.apartment) {
+                  <span>
+                    {{ selectedOrder.shippingAddress.apartment }}<br />
+                  </span>
+                  }
+                  {{ selectedOrder.shippingAddress.city }},
+                  {{ selectedOrder.shippingAddress.state }}
+                  {{ selectedOrder.shippingAddress.zipCode }}<br />
+                  {{ selectedOrder.shippingAddress.country }}<br />
+                  {{ selectedOrder.shippingAddress.phoneNumber }}
+                </address>
+              </div>
+
+              <!-- Billing Address -->
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <h4 class="text-sm font-medium text-gray-900 mb-2">
+                  Billing Address
+                </h4>
+                <address class="text-sm text-gray-500 not-italic">
+                  {{ selectedOrder.billingAddress.fullName }}<br />
+                  {{ selectedOrder.billingAddress.streetAddress }}<br />
+                  @if (selectedOrder.billingAddress.apartment) {
+                  <span>
+                    {{ selectedOrder.billingAddress.apartment }}<br />
+                  </span>
+
+                  }
+                  {{ selectedOrder.billingAddress.city }},
+                  {{ selectedOrder.billingAddress.state }}
+                  {{ selectedOrder.billingAddress.zipCode }}<br />
+                  {{ selectedOrder.billingAddress.country }}<br />
+                  {{ selectedOrder.billingAddress.phoneNumber }}
+                </address>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Totals -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">
+              Order Summary
+            </h3>
+            <div class="bg-gray-50 p-6 rounded-lg">
+              <div class="flow-root">
+                <dl class="text-sm">
+                  <div class="flex justify-between py-2">
+                    <dt class="text-gray-600">Subtotal</dt>
+                    <dd class="font-medium text-gray-900">
+                      ${{ selectedOrder.subtotal.toFixed(2) }}
+                    </dd>
+                  </div>
+                  <div class="flex justify-between py-2">
+                    <dt class="text-gray-600">Shipping</dt>
+                    <dd class="font-medium text-gray-900">
+                      ${{ selectedOrder.shippingCost.toFixed(2) }}
+                    </dd>
+                  </div>
+                  <div class="flex justify-between py-2">
+                    <dt class="text-gray-600">Tax</dt>
+                    <dd class="font-medium text-gray-900">
+                      ${{ selectedOrder.tax.toFixed(2) }}
+                    </dd>
+                  </div>
+                  <div
+                    class="flex justify-between py-2 border-t border-gray-200 pt-4"
+                  >
+                    <dt class="text-base font-medium text-gray-900">
+                      Order Total
+                    </dt>
+                    <dd class="text-base font-medium text-gray-900">
+                      ${{ selectedOrder.total.toFixed(2) }}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+
+            <!-- Order Notes -->
+            @if (selectedOrder.notes) {
+            <div class="mt-6">
+              <h4 class="text-sm font-medium text-gray-900 mb-2">
+                Order Notes
+              </h4>
+              <div class="bg-yellow-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-800">{{ selectedOrder.notes }}</p>
+              </div>
+            </div>
+            }
+
+            <!-- Action Buttons -->
+            <div class="mt-6 flex flex-col sm:flex-row gap-4">
+              @if (selectedOrder.status === 'shipped') {
+              <button
+                class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer"
+              >
+                Track Package
+              </button>
+              } @if (selectedOrder.status === 'delivered') {
+              <button
+                class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer"
+              >
+                Leave Review
+              </button>
+              } @if (selectedOrder.status === 'pending' || selectedOrder.status
+              === 'processing') {
+              <button
+                (click)="cancelOrder(selectedOrder.id!, $event)"
+                class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
+              >
+                Cancel Order
+              </button>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>

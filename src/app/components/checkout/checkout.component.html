@@ -1,1 +1,877 @@
-<p>checkout works!</p>
+<div
+  class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8"
+>
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <h1
+        class="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl"
+      >
+        Checkout
+      </h1>
+      <p class="mt-2 text-lg text-gray-600">Complete your purchase securely</p>
+    </div>
+
+    <!-- Order Confirmation (shown after successful order) -->
+    <div
+      *ngIf="orderComplete"
+      class="bg-white rounded-2xl shadow-sm p-8 md:p-12 text-center max-w-3xl mx-auto"
+    >
+      <div class="mx-auto h-24 w-24 text-green-500 mb-6">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">
+        Thank you for your order!
+      </h2>
+      <p class="text-gray-600 mb-6">
+        Your order #{{ orderConfirmation?.id }} has been placed successfully.
+      </p>
+
+      <div class="bg-gray-50 rounded-lg p-6 mb-8 text-left">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Order Summary</h3>
+        <div class="space-y-2">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Subtotal</span>
+            <span class="font-medium">${{ subtotal.toFixed(2) }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Shipping</span>
+            <span class="font-medium">${{ shippingCost.toFixed(2) }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Tax</span>
+            <span class="font-medium">${{ tax.toFixed(2) }}</span>
+          </div>
+          <div class="flex justify-between pt-2 border-t border-gray-200">
+            <span class="font-medium text-gray-900">Total</span>
+            <span class="font-bold text-gray-900">${{ total.toFixed(2) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <button
+          (click)="continueShopping()"
+          class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Continue Shopping
+        </button>
+        <button
+          (click)="viewOrder()"
+          class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          View Order Details
+        </button>
+      </div>
+    </div>
+
+    <!-- Checkout Process -->
+    <div *ngIf="!orderComplete" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left Column: Checkout Steps -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
+          <!-- Progress Steps -->
+          <div class="border-b border-gray-200">
+            <div class="px-6 py-4">
+              <nav class="flex justify-between">
+                <button
+                  [ngClass]="{
+                    'text-indigo-600 font-medium': currentStep === 1,
+                    'text-gray-500': currentStep !== 1
+                  }"
+                  class="flex flex-col items-center text-xs sm:text-sm"
+                >
+                  <span
+                    class="flex items-center justify-center w-8 h-8 rounded-full mb-1"
+                    [ngClass]="{
+                      'bg-indigo-100 text-indigo-600': currentStep >= 1,
+                      'bg-gray-100 text-gray-400': currentStep < 1
+                    }"
+                    >1</span
+                  >
+                  Shipping
+                </button>
+                <div
+                  class="hidden sm:block w-full border-t border-gray-200 mt-4 mx-2"
+                ></div>
+                <button
+                  [ngClass]="{
+                    'text-indigo-600 font-medium': currentStep === 2,
+                    'text-gray-500': currentStep !== 2
+                  }"
+                  class="flex flex-col items-center text-xs sm:text-sm"
+                >
+                  <span
+                    class="flex items-center justify-center w-8 h-8 rounded-full mb-1"
+                    [ngClass]="{
+                      'bg-indigo-100 text-indigo-600': currentStep >= 2,
+                      'bg-gray-100 text-gray-400': currentStep < 2
+                    }"
+                    >2</span
+                  >
+                  Billing
+                </button>
+                <div
+                  class="hidden sm:block w-full border-t border-gray-200 mt-4 mx-2"
+                ></div>
+                <button
+                  [ngClass]="{
+                    'text-indigo-600 font-medium': currentStep === 3,
+                    'text-gray-500': currentStep !== 3
+                  }"
+                  class="flex flex-col items-center text-xs sm:text-sm"
+                >
+                  <span
+                    class="flex items-center justify-center w-8 h-8 rounded-full mb-1"
+                    [ngClass]="{
+                      'bg-indigo-100 text-indigo-600': currentStep >= 3,
+                      'bg-gray-100 text-gray-400': currentStep < 3
+                    }"
+                    >3</span
+                  >
+                  Payment
+                </button>
+              </nav>
+            </div>
+          </div>
+
+          <!-- Step 1: Shipping Information -->
+          <div *ngIf="currentStep === 1" class="p-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-6">
+              Shipping Information
+            </h2>
+
+            <form
+              [formGroup]="shippingForm"
+              class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4"
+            >
+              <div class="sm:col-span-2">
+                <label
+                  for="fullName"
+                  class="block text-sm font-medium text-gray-700"
+                  >Full Name</label
+                >
+                <input
+                  type="text"
+                  id="fullName"
+                  formControlName="fullName"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                <div
+                  *ngIf="
+                    shippingForm.get('fullName')?.invalid &&
+                    shippingForm.get('fullName')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Full name is required
+                </div>
+              </div>
+
+              <div class="sm:col-span-2">
+                <label
+                  for="streetAddress"
+                  class="block text-sm font-medium text-gray-700"
+                  >Street Address</label
+                >
+                <input
+                  type="text"
+                  id="streetAddress"
+                  formControlName="streetAddress"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                <div
+                  *ngIf="
+                    shippingForm.get('streetAddress')?.invalid &&
+                    shippingForm.get('streetAddress')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Street address is required
+                </div>
+              </div>
+
+              <div>
+                <label
+                  for="apartment"
+                  class="block text-sm font-medium text-gray-700"
+                  >Apartment, suite, etc. (optional)</label
+                >
+                <input
+                  type="text"
+                  id="apartment"
+                  formControlName="apartment"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="city"
+                  class="block text-sm font-medium text-gray-700"
+                  >City</label
+                >
+                <input
+                  type="text"
+                  id="city"
+                  formControlName="city"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                <div
+                  *ngIf="
+                    shippingForm.get('city')?.invalid &&
+                    shippingForm.get('city')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  City is required
+                </div>
+              </div>
+
+              <div>
+                <label
+                  for="state"
+                  class="block text-sm font-medium text-gray-700"
+                  >State / Province</label
+                >
+                <select
+                  id="state"
+                  formControlName="state"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                >
+                  <option value="" disabled>Select a state</option>
+                  <option *ngFor="let state of states" [value]="state">
+                    {{ state }}
+                  </option>
+                </select>
+                <div
+                  *ngIf="
+                    shippingForm.get('state')?.invalid &&
+                    shippingForm.get('state')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  State is required
+                </div>
+              </div>
+
+              <div>
+                <label
+                  for="zipCode"
+                  class="block text-sm font-medium text-gray-700"
+                  >ZIP / Postal Code</label
+                >
+                <input
+                  type="text"
+                  id="zipCode"
+                  formControlName="zipCode"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                <div
+                  *ngIf="
+                    shippingForm.get('zipCode')?.invalid &&
+                    shippingForm.get('zipCode')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Please enter a valid ZIP code (e.g., 12345 or 12345-6789)
+                </div>
+              </div>
+
+              <div>
+                <label
+                  for="country"
+                  class="block text-sm font-medium text-gray-700"
+                  >Country</label
+                >
+                <select
+                  id="country"
+                  formControlName="country"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                >
+                  <option *ngFor="let country of countries" [value]="country">
+                    {{ country }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="sm:col-span-2">
+                <label
+                  for="phoneNumber"
+                  class="block text-sm font-medium text-gray-700"
+                  >Phone Number</label
+                >
+                <input
+                  type="tel"
+                  id="phoneNumber"
+                  formControlName="phoneNumber"
+                  (input)="formatPhoneNumber($event, 'shipping')"
+                  placeholder="(123) 456-7890"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                <div
+                  *ngIf="
+                    shippingForm.get('phoneNumber')?.invalid &&
+                    shippingForm.get('phoneNumber')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Please enter a valid phone number (e.g., (123) 456-7890)
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Step 2: Billing Information -->
+          <div *ngIf="currentStep === 2" class="p-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">
+              Billing Information
+            </h2>
+
+            <div class="mb-6">
+              <div class="flex items-center">
+                <input
+                  id="same-address"
+                  type="checkbox"
+                  [checked]="sameBillingAddress"
+                  (change)="toggleBillingAddress()"
+                  class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+                <label
+                  for="same-address"
+                  class="ml-2 block text-sm text-gray-700"
+                >
+                  Same as shipping address
+                </label>
+              </div>
+            </div>
+
+            <form
+              *ngIf="!sameBillingAddress"
+              [formGroup]="billingForm"
+              class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4"
+            >
+              <div class="sm:col-span-2">
+                <label
+                  for="billing-fullName"
+                  class="block text-sm font-medium text-gray-700"
+                  >Full Name</label
+                >
+                <input
+                  type="text"
+                  id="billing-fullName"
+                  formControlName="fullName"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                <div
+                  *ngIf="
+                    billingForm.get('fullName')?.invalid &&
+                    billingForm.get('fullName')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Full name is required
+                </div>
+              </div>
+
+              <div class="sm:col-span-2">
+                <label
+                  for="billing-streetAddress"
+                  class="block text-sm font-medium text-gray-700"
+                  >Street Address</label
+                >
+                <input
+                  type="text"
+                  id="billing-streetAddress"
+                  formControlName="streetAddress"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                <div
+                  *ngIf="
+                    billingForm.get('streetAddress')?.invalid &&
+                    billingForm.get('streetAddress')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Street address is required
+                </div>
+              </div>
+
+              <div>
+                <label
+                  for="billing-apartment"
+                  class="block text-sm font-medium text-gray-700"
+                  >Apartment, suite, etc. (optional)</label
+                >
+                <input
+                  type="text"
+                  id="billing-apartment"
+                  formControlName="apartment"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="billing-city"
+                  class="block text-sm font-medium text-gray-700"
+                  >City</label
+                >
+                <input
+                  type="text"
+                  id="billing-city"
+                  formControlName="city"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                <div
+                  *ngIf="
+                    billingForm.get('city')?.invalid &&
+                    billingForm.get('city')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  City is required
+                </div>
+              </div>
+
+              <div>
+                <label
+                  for="billing-state"
+                  class="block text-sm font-medium text-gray-700"
+                  >State / Province</label
+                >
+                <select
+                  id="billing-state"
+                  formControlName="state"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                >
+                  <option value="" disabled>Select a state</option>
+                  <option *ngFor="let state of states" [value]="state">
+                    {{ state }}
+                  </option>
+                </select>
+                <div
+                  *ngIf="
+                    billingForm.get('state')?.invalid &&
+                    billingForm.get('state')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  State is required
+                </div>
+              </div>
+
+              <div>
+                <label
+                  for="billing-zipCode"
+                  class="block text-sm font-medium text-gray-700"
+                  >ZIP / Postal Code</label
+                >
+                <input
+                  type="text"
+                  id="billing-zipCode"
+                  formControlName="zipCode"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                <div
+                  *ngIf="
+                    billingForm.get('zipCode')?.invalid &&
+                    billingForm.get('zipCode')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Please enter a valid ZIP code (e.g., 12345 or 12345-6789)
+                </div>
+              </div>
+
+              <div>
+                <label
+                  for="billing-country"
+                  class="block text-sm font-medium text-gray-700"
+                  >Country</label
+                >
+                <select
+                  id="billing-country"
+                  formControlName="country"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                >
+                  <option *ngFor="let country of countries" [value]="country">
+                    {{ country }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="sm:col-span-2">
+                <label
+                  for="billing-phoneNumber"
+                  class="block text-sm font-medium text-gray-700"
+                  >Phone Number</label
+                >
+                <input
+                  type="tel"
+                  id="billing-phoneNumber"
+                  formControlName="phoneNumber"
+                  (input)="formatPhoneNumber($event, 'billing')"
+                  placeholder="(123) 456-7890"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                <div
+                  *ngIf="
+                    billingForm.get('phoneNumber')?.invalid &&
+                    billingForm.get('phoneNumber')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Please enter a valid phone number (e.g., (123) 456-7890)
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Step 3: Payment Information -->
+          <div *ngIf="currentStep === 3" class="p-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-6">
+              Payment Method
+            </h2>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+              <div
+                *ngFor="let method of paymentMethods"
+                (click)="selectPaymentMethod(method.type)"
+                class="border rounded-lg p-4 text-center cursor-pointer transition-colors"
+                [ngClass]="{
+                  'border-indigo-500 bg-indigo-50':
+                    selectedPaymentMethod === method.type,
+                  'border-gray-200 hover:border-gray-300':
+                    selectedPaymentMethod !== method.type
+                }"
+              >
+                <div class="h-10 flex items-center justify-center mb-2">
+                  <!-- Icons would go here in a real app -->
+                  <span class="text-xl">{{ method.label }}</span>
+                </div>
+                <span
+                  class="text-sm font-medium"
+                  [ngClass]="{
+                    'text-indigo-600': selectedPaymentMethod === method.type,
+                    'text-gray-700': selectedPaymentMethod !== method.type
+                  }"
+                >
+                  {{ method.label }}
+                </span>
+              </div>
+            </div>
+
+            <form
+              *ngIf="selectedPaymentMethod === 'creditCard'"
+              [formGroup]="paymentForm"
+              class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4"
+            >
+              <div class="sm:col-span-2">
+                <label
+                  for="cardNumber"
+                  class="block text-sm font-medium text-gray-700"
+                  >Card Number</label
+                >
+                <input
+                  type="text"
+                  id="cardNumber"
+                  formControlName="cardNumber"
+                  (input)="formatCardNumber($event)"
+                  placeholder="1234 5678 9012 3456"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                <div
+                  *ngIf="
+                    paymentForm.get('cardNumber')?.invalid &&
+                    paymentForm.get('cardNumber')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Please enter a valid card number (e.g., 1234 5678 9012 3456)
+                </div>
+              </div>
+
+              <div class="sm:col-span-2">
+                <label
+                  for="nameOnCard"
+                  class="block text-sm font-medium text-gray-700"
+                  >Name on Card</label
+                >
+                <input
+                  type="text"
+                  id="nameOnCard"
+                  formControlName="nameOnCard"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                <div
+                  *ngIf="
+                    paymentForm.get('nameOnCard')?.invalid &&
+                    paymentForm.get('nameOnCard')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Name on card is required
+                </div>
+              </div>
+
+              <div>
+                <label
+                  for="expirationDate"
+                  class="block text-sm font-medium text-gray-700"
+                  >Expiration Date (MM/YY)</label
+                >
+                <input
+                  type="text"
+                  id="expirationDate"
+                  formControlName="expirationDate"
+                  (input)="formatExpirationDate($event)"
+                  placeholder="MM/YY"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                <div
+                  *ngIf="
+                    paymentForm.get('expirationDate')?.invalid &&
+                    paymentForm.get('expirationDate')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Please enter a valid expiration date (e.g., 12/25)
+                </div>
+              </div>
+
+              <div>
+                <label for="cvv" class="block text-sm font-medium text-gray-700"
+                  >CVV</label
+                >
+                <input
+                  type="text"
+                  id="cvv"
+                  formControlName="cvv"
+                  placeholder="123"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                <div
+                  *ngIf="
+                    paymentForm.get('cvv')?.invalid &&
+                    paymentForm.get('cvv')?.touched
+                  "
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Please enter a valid CVV (3-4 digits)
+                </div>
+              </div>
+            </form>
+
+            <div
+              *ngIf="selectedPaymentMethod !== 'creditCard'"
+              class="mt-6 p-4 bg-gray-50 rounded-lg"
+            >
+              <p class="text-sm text-gray-600">
+                You'll be redirected to
+                {{
+                  selectedPaymentMethod === "paypal"
+                    ? "PayPal"
+                    : selectedPaymentMethod === "applePay"
+                    ? "Apple Pay"
+                    : "Google Pay"
+                }}
+                to complete your purchase securely.
+              </p>
+            </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="px-6 py-4 bg-gray-50 flex justify-between">
+            <button
+              *ngIf="currentStep > 1"
+              (click)="prevStep()"
+              type="button"
+              class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Back
+            </button>
+            <div></div>
+            <!-- Spacer for flex justify-between -->
+            <button
+              *ngIf="currentStep < 3"
+              (click)="nextStep()"
+              type="button"
+              [disabled]="
+                (currentStep === 1 && shippingForm.invalid) ||
+                (currentStep === 2 && billingForm.invalid)
+              "
+              [ngClass]="{
+                'opacity-50 cursor-not-allowed':
+                  (currentStep === 1 && shippingForm.invalid) ||
+                  (currentStep === 2 && billingForm.invalid)
+              }"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Continue
+            </button>
+            <button
+              *ngIf="currentStep === 3"
+              (click)="placeOrder()"
+              type="button"
+              [disabled]="
+                (selectedPaymentMethod === 'creditCard' &&
+                  paymentForm.invalid) ||
+                isSubmitting
+              "
+              [ngClass]="{
+                'opacity-50 cursor-not-allowed':
+                  (selectedPaymentMethod === 'creditCard' &&
+                    paymentForm.invalid) ||
+                  isSubmitting
+              }"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              <span *ngIf="isSubmitting" class="mr-2">
+                <svg
+                  class="animate-spin h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              </span>
+              {{ isSubmitting ? "Processing..." : "Place Order" }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Order Summary -->
+      <div class="lg:col-span-1">
+        <div
+          class="bg-white rounded-2xl shadow-sm overflow-hidden sticky top-6"
+        >
+          <div class="p-6 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">
+              Order Summary
+            </h2>
+
+            <div class="flow-root">
+              <ul class="-my-4 divide-y divide-gray-200">
+                <li *ngFor="let item of cartItems" class="py-4 flex">
+                  <div
+                    class="flex-shrink-0 w-16 h-16 border border-gray-200 rounded-md overflow-hidden"
+                  >
+                    <img
+                      src="{{ item.imageUrl }}"
+                      alt="{{ item.productName }}"
+                      class="w-full h-full object-center object-cover"
+                    />
+                  </div>
+                  <div class="ml-4 flex-1 flex flex-col">
+                    <div>
+                      <div
+                        class="flex justify-between text-base font-medium text-gray-900"
+                      >
+                        <h3>{{ item.productName }}</h3>
+                        <p class="ml-4">${{ item.subtotal.toFixed(2) }}</p>
+                      </div>
+                      <p class="mt-1 text-sm text-gray-500">
+                        Qty {{ item.quantity }}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="p-6 border-b border-gray-200">
+            <div class="flex justify-between text-sm mb-2">
+              <p class="text-gray-600">Subtotal</p>
+              <p class="font-medium text-gray-900">
+                ${{ subtotal.toFixed(2) }}
+              </p>
+            </div>
+            <div class="flex justify-between text-sm mb-2">
+              <p class="text-gray-600">Shipping</p>
+              <p class="font-medium text-gray-900">
+                ${{ shippingCost.toFixed(2) }}
+              </p>
+            </div>
+            <div class="flex justify-between text-sm mb-2">
+              <p class="text-gray-600">Tax (8%)</p>
+              <p class="font-medium text-gray-900">${{ tax.toFixed(2) }}</p>
+            </div>
+            <div
+              class="flex justify-between text-base font-medium mt-4 pt-4 border-t border-gray-200"
+            >
+              <p>Total</p>
+              <p>${{ total.toFixed(2) }}</p>
+            </div>
+          </div>
+
+          <div class="p-6">
+            <div class="flex items-center mb-4">
+              <svg
+                class="h-5 w-5 text-green-500 mr-2"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <p class="text-sm text-gray-600">
+                Free shipping on orders over $100
+              </p>
+            </div>
+            <div class="flex items-center">
+              <svg
+                class="h-5 w-5 text-green-500 mr-2"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <p class="text-sm text-gray-600">30-day easy returns</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,14 +1,39 @@
-<nav class="bg-white shadow-md sticky top-0 z-50">
+<nav class="bg-white shadow-md fixed w-full top-0 z-50">
   <div class="container mx-auto px-4">
     <div class="flex justify-between items-center h-16">
       <!-- Logo -->
       <div class="flex-shrink-0">
-        <a routerLink="/" class="text-2xl font-bold text-indigo-600">ShopSwift</a>
+        <a routerLink="/" class="text-2xl font-bold text-indigo-600"
+          >ShopSwift</a
+        >
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="hidden md:flex items-center space-x-8">
+        <a
+          routerLink="/"
+          class="text-gray-600 hover:text-indigo-600 font-medium"
+          >Shop</a
+        >
+        <a
+          routerLink="/orders"
+          class="text-gray-600 hover:text-indigo-600 font-medium relative"
+          >Orders
+        </a>
+        <a
+          routerLink="/profile"
+          class="text-gray-400 font-medium cursor-not-allowed"
+          aria-disabled="true"
+          >Contact</a
+        >
       </div>
 
       <!-- Icons Group -->
       <div class="flex items-center space-x-6">
-        <a routerLink="/orders" class="text-gray-600 hover:text-indigo-600 relative">
+        <a
+          routerLink="/cart"
+          class="text-gray-600 hover:text-indigo-600 relative"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-6 w-6"
@@ -25,7 +50,7 @@
           </svg>
           <span
             class="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"
-            >5</span
+            >{{ cartCount() }}</span
           >
         </a>
       </div>
