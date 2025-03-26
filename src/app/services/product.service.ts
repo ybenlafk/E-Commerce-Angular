@@ -139,7 +139,7 @@ export class ProductService {
         params = params.set('_sort', '-price');
         break;
       case 'popularity':
-        params = params.set('_sort', 'rating').set('_order', 'desc');
+        params = params.set('_sort', '-rating')
         break;
       case 'priceLowToHigh':
       default:
