@@ -1,9 +1,10 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpInterceptor, HttpRequest, HttpResponse, HttpHandler, HttpEvent } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { Category, Product } from '../models/product.type';
 import { HttpParams } from '@angular/common/http';
-import { finalize } from 'rxjs';
+import { finalize, Observable, of } from 'rxjs';
 import { environment } from '../../environments/environments';
+import { shareReplay, tap } from 'rxjs/operators';
 
 type PaginatedResponse<T> = {
   data: T[];
@@ -11,6 +12,46 @@ type PaginatedResponse<T> = {
   items: number;
 };
 
+// Caching Interceptor
+@Injectable()
+export class CachingInterceptor implements HttpInterceptor {
+  private cache = new Map<string, Observable<any>>();
+  private cacheDuration = 5 * 60 * 1000; // 5 minutes
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // Only cache GET requests
+    if (req.method !== 'GET') {
+      return next.handle(req);
+    }
+
+    const cachedResponse = this.cache.get(req.urlWithParams);
+    
+    // If cached response exists and is not expired, return it
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+
+    // Otherwise, make the request and cache the response
+    const request = next.handle(req).pipe(
+      tap((event) => {
+        if (event instanceof HttpResponse) {
+          this.cache.set(req.urlWithParams, of(event));
+          
+          // Set timeout to remove cache after specified duration
+          setTimeout(() => {
+            this.cache.delete(req.urlWithParams);
+          }, this.cacheDuration);
+        }
+      }),
+      shareReplay(1)
+    );
+
+    this.cache.set(req.urlWithParams, request);
+    return request;
+  }
+}
+
+// Updated Product Service with Caching Support
 @Injectable({
   providedIn: 'root',
 })
@@ -22,10 +63,14 @@ export class ProductService {
   totalPages = signal<number>(0);
   totalItems = signal<number>(0);
 
+  // Cache configuration
+  private categoriesCache$: Observable<Category[]> | null = null;
+  private productDetailsCache = new Map<number, Observable<Product>>();
+
   constructor() {}
 
   /**
-   * Fetches products using default pagination settings.
+   * Fetches products using default pagination settings with caching.
    * @param page The current page number.
    * @param limit The number of items per page.
    * @returns The observable result of fetchProductsWithFilters.
@@ -35,22 +80,22 @@ export class ProductService {
   }
 
   /**
-   * Fetches a list of available product categories.
+   * Fetches a list of available product categories with caching.
    * @returns An observable containing a list of categories.
    */
   fetchCategories() {
-    return this.http.get<Category[]>(`${environment.API_URL}/categories`);
+    // If categories are not already cached, fetch and cache them
+    if (!this.categoriesCache$) {
+      this.categoriesCache$ = this.http.get<Category[]>(`${environment.API_URL}/categories`).pipe(
+        shareReplay(1)
+      );
+    }
+    return this.categoriesCache$;
   }
 
   /**
    * Fetches products with optional filters, including pagination, categories, price range, rating, and sorting.
-   * @param page The current page number.
-   * @param limit The number of items per page.
-   * @param categories The list of selected categories for filtering.
-   * @param minPrice The minimum price filter.
-   * @param maxPrice The maximum price filter.
-   * @param minRating The minimum rating filter.
-   * @param sortOption The sorting option (e.g., 'priceLowToHigh', 'priceHighToLow', 'popularity').
+   * Note: Due to dynamic nature of filters, this method does not use long-term caching.
    */
   fetchProductsWithFilters(
     page: number = 1,
@@ -121,20 +166,28 @@ export class ProductService {
   }
 
   /**
-   * Fetches product details by ID.
+   * Fetches product details by ID with caching.
    * @param productId The ID of the product to fetch.
    * @returns An observable containing the product details.
    */
   fetchProductById(productId: number) {
-    return this.http.get<Product>(
-      `${environment.API_URL}/products/${productId}`
-    );
+    // Check if product details are already cached
+    if (!this.productDetailsCache.has(productId)) {
+      const productDetails$ = this.http.get<Product>(
+        `${environment.API_URL}/products/${productId}`
+      ).pipe(
+        shareReplay(1)
+      );
+      
+      this.productDetailsCache.set(productId, productDetails$);
+    }
+    
+    return this.productDetailsCache.get(productId)!;
   }
 
   /**
    * Fetches the top 4 rated products within a given category, excluding a specific product ID.
-   * @param category The category name to filter products.
-   * @param excludeId The product ID to exclude from the results.
+   * Note: This method does not use long-term caching due to its dynamic nature.
    */
   fetchTop4RatedProductsInCategory(category: string, excludeId: number) {
     this.isLoading.set(true);
@@ -161,5 +214,13 @@ export class ProductService {
           this.error.set(error.message);
         },
       });
+  }
+
+  /**
+   * Clear all cached data
+   */
+  clearCache() {
+    this.categoriesCache$ = null;
+    this.productDetailsCache.clear();
   }
 }
