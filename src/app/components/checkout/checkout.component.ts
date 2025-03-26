@@ -323,7 +323,7 @@ export class CheckoutComponent implements OnInit {
   viewOrder(): void {
     // Navigate to order details page
     if (this.orderConfirmation) {
-      this.router.navigate(['/orders', this.orderConfirmation.id]);
+      this.router.navigate(['/orders']);
     }
   }
 }
